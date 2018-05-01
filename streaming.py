@@ -22,15 +22,10 @@ consumer_secret = "AVdCvDK5jlaR6tZS693TzVew3rSajEcCgzNnQQRFVlNMosFYYN"
 access_token = "444025613-IcF1FeKW6n90NwlPaDIP0gsmDVzFwOS1qDMhIKNN"
 access_token_secret = "y9KxmpYON0PhLuMTC5uHamThxc0ruOJDeHawKrlKvQpDR"
 
-
-filename = "data/data11.json"
-interval = datetime.timedelta(minutes=5)
-
-
+filename = "data/data.json"
+interval = datetime.timedelta(minutes=30)
 
 count = 1
-
-
 
 
 def initialize_tweepy():
@@ -41,6 +36,14 @@ def initialize_tweepy():
     return Stream(auth, l)
 
 
+def print_remaining_time():
+    remaining = final_time - datetime.datetime.now()
+    print()
+    print("**********************************************************************************")
+    print("Remaining Time: ", remaining)
+    print("**********************************************************************************")
+    print()
+
 class StdOutListener(StreamListener):
     """ A listener handles tweets that are received from the stream.
     This is a basic listener that just prints received tweets to stdout.
@@ -49,29 +52,29 @@ class StdOutListener(StreamListener):
 
     def on_status(self, status):
         global count
-        # print(status)
-        # json_data = json.loads(status)
-        if datetime.datetime.now() > date1 + interval:
+
+        if datetime.datetime.now() > final_time:
             return False
+
         try:
             written_data = {}
-            # if "created_at" in status and "text" in status and "text" in status and "timestamp_ms" in status:
-            # if "created_at" in status:
             written_data["created_at"] = str(status.created_at)
-            # if "id" in json_data:
-            written_data["id"] = status.id
-            # if "text" in json_data:
-            written_data["text"] = status.text
-            # if "timestamp_ms" in json_data:
             written_data["timestamp_ms"] = status.timestamp_ms
-            # json_string = json.loads(data)["created_at"]["id"]["text"]["timestamp_ms"]
+            written_data["id"] = status.id
+            written_data["text"] = status.text
+            # written_data["retweet_count"] = status.retweet_count
+            # written_data["favorite_count"] = status.favorite_count
+
             json.dump(written_data, f, ensure_ascii=False)
             f.write("\n")
-            # f.write(json_string)
             print(count)
             print("\t", status.text)
             count += 1
             written_data.clear
+
+            if count % 100 == 0:
+                print_remaining_time()
+
         # If some error occurs
         except Exception as e:
             # Print the error
@@ -84,33 +87,36 @@ class StdOutListener(StreamListener):
     def on_error(self, status_code):
         # Print the error code
         print('Encountered error with status code:', status_code)
+        print_remaining_time()
         return False
 
     def on_exception(self, exception):
         print(exception)
+        print_remaining_time()
         return False
 
 
 if __name__ == '__main__':
 
     filtering_list = build_filter_list()
-    print("Filtering List: " + str(filtering_list))
+    print("Filtering List:")
+    print(str(filtering_list))
     print()
 
     stream = initialize_tweepy()
 
     date1 = datetime.datetime.now()
 
+    final_time = date1 + interval
+
     print("Current Time: ", date1)
     print()
     print("Interval to Collect the Tweets: ", interval)
     print()
 
-    
     with open(filename, mode="a") as f:
-        while (datetime.datetime.now() <= date1 + interval):
+        while (datetime.datetime.now() <= final_time):
 
-            print()
             print("Streaming has been started...")
             print()
 
@@ -121,6 +127,8 @@ if __name__ == '__main__':
                 break
             except:
                 print("Unexpected error:", sys.exc_info()[0])
+                print_remaining_time()
+
 
     date2 = datetime.datetime.now()
 
@@ -128,4 +136,4 @@ if __name__ == '__main__':
     print("Current Time: ", date2)
     print()
     print("Time Taken: ", date2 - date1)
-    print("Total tweets: ", count - 1)
+    print("Total Tweets: ", count - 1)
