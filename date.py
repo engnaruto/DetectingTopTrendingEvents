@@ -39,4 +39,4 @@ diff = date2 - date1
 
 print("Diff:")
 print(diff)
-print(str(diff.total_days()))
+print(str(diff.days))

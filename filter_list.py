@@ -1,7 +1,7 @@
 def build_filter_list():
     with open("words.txt", "r") as f:
         words = [line.strip() for line in f]
-        #print(words)
+        # print(words)
         return words
 
 

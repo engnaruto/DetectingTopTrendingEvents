@@ -1,15 +1,13 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import, print_function
 
-import codecs
-import io
-import json
-import time
-import sys
 import datetime
+import json
+import sys
 
 from tweepy import OAuthHandler, Stream
 from tweepy.streaming import StreamListener
+
 from filter_list import build_filter_list
 
 # Go to http://apps.twitter.com and create an app.
@@ -44,6 +42,7 @@ def print_remaining_time():
     print("**********************************************************************************")
     print()
 
+
 class StdOutListener(StreamListener):
     """ A listener handles tweets that are received from the stream.
     This is a basic listener that just prints received tweets to stdout.
@@ -70,7 +69,7 @@ class StdOutListener(StreamListener):
             print(count)
             print("\t", status.text)
             count += 1
-            written_data.clear
+            written_data.clear()
 
             if count % 100 == 0:
                 print_remaining_time()
@@ -115,7 +114,7 @@ if __name__ == '__main__':
     print()
 
     with open(filename, mode="a") as f:
-        while (datetime.datetime.now() <= final_time):
+        while datetime.datetime.now() <= final_time:
 
             print("Streaming has been started...")
             print()
@@ -128,7 +127,6 @@ if __name__ == '__main__':
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 print_remaining_time()
-
 
     date2 = datetime.datetime.now()
 
