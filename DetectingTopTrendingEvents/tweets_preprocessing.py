@@ -10,13 +10,17 @@ def preprocess_tweet(tweet):
         return None
         # print(text)
     text = re.sub(r"http\S+", "", text)  # remove hyperlinks
-    text = remove_emojis(text).strip()  # remove emojis
+    text = re.sub(r"[.:~!#@$%٪^&*()\-_=+\[\]{\}\"';/؟…?\n\t<>,،؛|﴿﴾“”`┈•✦ﷺ]", " ", text)
+    text = re.sub(r"[٠-٩]+", " ", text)  # remove arabic digits
+    text = re.sub(r"\d+", " ", text)  # remove english digits
+    text = remove_emojis(text)  # remove emojis
     text = re.sub(r"\s+", " ", text)
+    text = text.strip()
 
     if len(text.split()) <= 3:  # remove tweets < 3 words
         return None
 
-    tweet["text"] = text
+    tweet["text_preproccesed"] = text
     return tweet
 
 
@@ -33,8 +37,9 @@ def preprocess_tweets():
                     w.write("\n")
                     count += 1
                     print(count)
+                    print("\t", tweet['text_preproccesed'])
                     # print("\t", tweet["text"])
-                # if count == 50:
+                # if count == 5000:
                 #     break
 
 

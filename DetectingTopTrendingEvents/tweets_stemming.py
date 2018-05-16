@@ -15,7 +15,7 @@ def run():
         with open("data/stemmed_tweets.json", 'w') as w:
             for line in f:
                 tweet = json.loads(line)
-                text = tweet['text']
+                text = tweet['text_preproccesed']
                 stemmed_text = stemmer.stem(text)
                 count += 1
                 tweet['text_stemmed'] = stemmed_text
