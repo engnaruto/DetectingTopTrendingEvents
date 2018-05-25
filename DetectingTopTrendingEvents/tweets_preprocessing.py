@@ -1,4 +1,5 @@
 import json
+import csv
 import re
 
 from remove_emojis import remove_emojis
@@ -10,7 +11,12 @@ def preprocess_tweet(tweet):
         return None
         # print(text)
     text = re.sub(r"http\S+", "", text)  # remove hyperlinks
-    text = re.sub(r"[.:~!#@$%٪^&*()\-_=+\[\]{\}\"';/؟…?\n\t<>,،؛|﴿﴾“”`┈•✦ﷺ]", " ", text)
+    text = re.sub(r"bit\S+", "", text)  # remove hyperlinks
+    text = re.sub(r"pic\S+", "", text)  # remove hyperlinks
+    text = re.sub(r"almasryalyoum\S+", "", text)  # remove hyperlinks
+    text = re.sub(r"youtube\S+", "", text)  # remove hyperlinks
+    text = re.sub(r"ow\S+", "", text)  # remove hyperlinks
+    text = re.sub(r"[.:~!#@$%٪^&*()\-_=+\[\]{\}\"';/؟…?\n\t<>,،»«؛|﴿﴾“”`┈•✦ﷺ]", " ", text)
     text = re.sub(r"[٠-٩]+", " ", text)  # remove arabic digits
     text = re.sub(r"\d+", " ", text)  # remove english digits
     text = remove_emojis(text)  # remove emojis
@@ -43,5 +49,27 @@ def preprocess_tweets():
                 #     break
 
 
+def preprocess_event_tweets():
+    count = 0
+    with open("data/event_data.csv", "r") as f:
+        with open("data/preprocessed_event_tweets.json", "w") as w:
+            reader = csv.reader(f, delimiter=';')
+            for row in reader:
+                if row[0] == "username":
+                    continue
+
+                tweet = {"created_at": row[1], "timestamp_ms": "0000000000000", "id": row[-2], "text": row[4]}
+
+                tweet = preprocess_tweet(tweet)
+
+                if tweet is not None:
+                    json.dump(tweet, w, ensure_ascii=False)
+                    w.write("\n")
+                    count += 1
+                    print(count)
+                    print("\t", tweet['text_preproccesed'])
+
+
 if __name__ == '__main__':
     preprocess_tweets()
+    preprocess_event_tweets()
